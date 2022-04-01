@@ -40,12 +40,13 @@ module.exports = {
   getCategory: (req, res) => {
     const id = req.params.id_category;
     db.query(`select * from class join category on class.id_category = category.id_category where class.id_category = ${id}`, (err, results) => {
-      if (err) throw err;
-      res.json({
-        message: "Data Kategori",
-        data: results
-      })
-    })
+        if (err) throw err;
+        res.json({
+          message: "Data Kategori",
+          data: results,
+        });
+      }
+    );
   },
 
   add: (req, res) => {
@@ -62,15 +63,21 @@ module.exports = {
         id_category: req.body.id_category,
       };
       db.query(`select * from category where id_category = ${data.id_category}`, (err, result) => {
-          if (err) throw err;
-          if (!result.length) res.json({ message: "category not found!" });
-          db.query(`insert into class set ?`, data, (err, results) => {
-            if ((null, err)) throw err;
-            res.json({
-              message: "Success added data",
-              data: data,
-            });
-          });
+          if (err) {
+            throw err;
+          } else {
+            if (!result.length) {
+              res.json({ message: "category not found!" });
+            } else {
+              db.query(`insert into class set ?`, data, (err, results) => {
+                if ((null, err)) throw err;
+                res.json({
+                  message: "Success added data",
+                  data: data,
+                });
+              });
+            }
+          }
         }
       );
     }
@@ -82,14 +89,14 @@ module.exports = {
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
-      id_category: req.body.id_category
+      id_category: req.body.id_category,
     };
-    db.query(`select * from category where id_category = ${data.id_category}`, (err, result) => {
+    db.query( `select * from category where id_category = ${data.id_category}`, (err, result) => {
         if (err) throw err;
         if (!result.length) res.json({ message: "category not found!" });
         if (req.file) {
           data.image = req.file.filename;
-          db.query(`update class set ? where id_class = ${id}`, data,(err, result) => {
+          db.query( `update class set ? where id_class = ${id}`, data, (err, result) => {
               if (err) throw err;
               res.json({
                 message: "Success updated data",
